@@ -1,20 +1,25 @@
 using UnityEngine;
+using TMPro;
 
 public class MovimientoPersonaje : MonoBehaviour
 {
     public float velocidadMovimiento = 5f;
     public float fuerzaSalto = 4f;
 
+    public TextMeshProUGUI contadorTexto;
+
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private bool enElSuelo = false;
+    public int contador = 0;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        ActualizarContador();
     }
 
     void Update()
@@ -28,7 +33,6 @@ public class MovimientoPersonaje : MonoBehaviour
             enElSuelo = false;
         }
 
-        // Voltear el sprite según la dirección
         if (movimientoX > 0)
         {
             spriteRenderer.flipX = false;
@@ -38,9 +42,23 @@ public class MovimientoPersonaje : MonoBehaviour
             spriteRenderer.flipX = true;
         }
 
-        // Enviar datos al Animator
         animator.SetFloat("Velocidad", Mathf.Abs(movimientoX));
         animator.SetBool("EnElSuelo", enElSuelo);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Collectible"))
+        {
+            Destroy(other.gameObject);
+            contador++;
+            ActualizarContador();
+        }
+    }
+
+    void ActualizarContador()
+    {
+        contadorTexto.text = "Frutas: " + contador;
     }
 
     void OnCollisionStay2D(Collision2D collision)
